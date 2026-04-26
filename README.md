@@ -2,7 +2,7 @@
 <img width="1187" height="717" alt="image" src="https://github.com/user-attachments/assets/997df2fb-5c32-4e7c-8e43-86e1848dd8ff" />
 
 
-- [Proactive Hunt Brief]( /Hunt Brief.md)
+- [Proactive Hunt Brief](https://github.com/21Aldir/Signals-Before-the-Noise/blob/main/Hunt%20Brief.md)
 
 ## Platforms and Languages Leveraged
 
