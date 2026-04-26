@@ -51,14 +51,8 @@ This lab contains realistic MDE telemetry. IP addresses and hostnames represent 
 
 ## Investigation Environment
 
-| Field | Value |
-|---|---|
-| Environment | READY |
-| Platform | Microsoft Sentinel |
-| Workspace | `law-cyber-range` |
-| Tables | `DeviceNetworkEvents`, `DeviceLogonEvents`, `DeviceProcessEvents`, `DeviceFileEvents`, `DeviceEvents` |
-| Time Window | 9 December 2025 to 23 December 2025 UTC |
-| Target Host | Identify from evidence |
+<img width="949" height="498" alt="image" src="https://github.com/user-attachments/assets/34582a48-6390-4797-93b3-e5c948b541fd" />
+
 
 **Schema Docs:**
 - [DeviceNetworkEvents](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicenetworkevents-table)
