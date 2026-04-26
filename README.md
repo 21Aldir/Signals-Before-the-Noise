@@ -1,6 +1,5 @@
-# Official [Cyber Range](http://joshmadakor.tech/cyber-range) Project
-
 # Threat Hunt Report: External RDP Compromise — Signals Before the Noise
+<img width="709" height="418" alt="image" src="https://github.com/user-attachments/assets/ed93ddd9-a7e3-44ba-b850-7974f13d91a4" />
 
 - [Proactive Hunt Brief](./hunt-03-brief.md)
 
