@@ -1,8 +1,9 @@
 # Threat Hunt Report
 <img width="1187" height="717" alt="image" src="https://github.com/user-attachments/assets/997df2fb-5c32-4e7c-8e43-86e1848dd8ff" />
 
+# Threat Hunt Report: External RDP Compromise — Signals Before the Noise
 
-- [Proactive Hunt Brief](https://github.com/21Aldir/Signals-Before-the-Noise/blob/main/Hunt%20Brief.md)
+- [Proactive Hunt Brief](./hunt-03-brief.md)
 
 ## Platforms and Languages Leveraged
 
@@ -65,8 +66,13 @@ DeviceNetworkEvents
 | count
 ```
 
+![RDP Event Count - 197 results](images/01-rdp-event-count.png)
+
 - **197** total network events on port 3389 from public IPs.
 - **173** unique source IPs targeted the exposed service.
+
+![Unique Source IPs - 173](images/02-unique-source-ips.png)
+
 - **57** source IPs showed more than one ActionType — both attempted and accepted connections, indicating a higher-confidence scanning class.
 - GeoIP enrichment revealed **11 distinct countries** associated with this RDP scanning activity.
 
@@ -88,12 +94,19 @@ DeviceLogonEvents
 | order by count_ desc
 ```
 
+![Auth Outcomes by ActionType](images/03-auth-outcomes.png)
+
 - **675** total RDP-related authentication events from public IPs.
 - Dominant outcome: **`LogonFailed`** (646 events).
+
+![Failure Reason - InvalidUserNameOrPassword](images/04-failure-reason.png)
+
 - Most common failure reason: **`InvalidUserNameOrPassword`** — classic credential brute force.
 - **29 successful** logon events recorded.
 - GeoIP enrichment: **17 countries** associated with authentication attempts.
 - **2 countries** had at least one successful authentication: **United States** and **Uruguay**.
+
+![Successful Auth Countries](images/05-successful-countries.png)
 
 PHTG operates exclusively in the United States. **Uruguay** was immediately flagged as anomalous.
 
@@ -130,6 +143,8 @@ DeviceLogonEvents
 | First Logon | 12/12/2025, 5:47:45 AM UTC |
 | First Interactive Session | 12/13/2025, 9:31:20 AM UTC |
 
+![Uruguay Successful Logons](images/06-uruguay-logons.png)
+
 Both IPs fall within the same `/24` subnet — consolidated attacker infrastructure.
 
 ---
@@ -146,6 +161,8 @@ Command: "NOTEPAD.EXE" C:\Users\vmAdminUsername\Documents\PHTG\notes_sarah.txt
 ```
 
 The attacker opened **`notes_sarah.txt`** — internal documentation belonging to the engineer who made the LinkedIn post. This file likely contained internal service details that reduced the attacker's effort.
+
+![notepad.exe opening notes_sarah.txt](images/07-notepad-notes-sarah.png)
 
 ---
 
@@ -167,6 +184,8 @@ Tracked the payload through its full rename chain using the file hash.
 
 **Double-extension evasion:** The file was briefly named `Sarah_Chen_Notes.exe.Txt` — appearing as a text file while containing an executable. The final name `PHTG.exe` placed inside the legitimate HealthCloud directory was designed to blend with expected service infrastructure.
 
+![Full Payload Rename Chain](images/08-rename-chain.png)
+
 ---
 
 ### 7. Payload Execution & Defense Evasion — `DeviceEvents` + `DeviceProcessEvents`
@@ -175,6 +194,8 @@ Windows Defender detected and quarantined the payload three times between 14:11 
 
 **Defender Classification:** `Trojan:Win32/Meterpreter.RPZ!MTB`  
 **Malware Family:** **Meterpreter** (Metasploit post-exploitation framework)
+
+![Defender Detection - Meterpreter](images/09-defender-meterpreter.png)
 
 **Execution phases:**
 
@@ -206,6 +227,8 @@ DeviceNetworkEvents
 | Outcome | `ConnectionFailed` (Defender interference) |
 
 The C2 IP falls in the same `/24` as the attacker's RDP IPs (`173.244.55.128`, `.130`, `.131`) — all infrastructure consolidated in Uruguay.
+
+![C2 Callback to Uruguay - Port 4444](images/10-c2-callback.png)
 
 ---
 
