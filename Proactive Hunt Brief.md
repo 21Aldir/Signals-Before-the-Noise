@@ -1,7 +1,5 @@
 # Proactive Hunt Brief — Hunt 03: Signals Before the Noise
 
-> **Source:** [LOG(N) Pacific Cyber Range — Hunt 03](https://hunt.lognpacific.com/hunt-03)  
-> **Difficulty:** Intermediate  
 > **Classification:** External RDP Compromise  
 > **Phases:** 7 (ATT&CK Kill Chain)
 
