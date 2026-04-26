@@ -157,12 +157,3 @@ let GeoTable =
 | 06 | *(Redacted)* | — |
 | 07 | *(Optional)* | — |
 
----
-
-## Rules of Engagement
-
-- Work independently. Do not share answers while the hunt is active.
-- AI tools are permitted for query formulation and technique research. The investigation methodology is the skill being tested.
-- Each flag allows 50 submission attempts unless stated otherwise. First hint is free. Second hint costs points.
-- Read the format line carefully before submitting.
-- This hunt starts with open-source evidence and progresses into endpoint telemetry. Follow the signals.
