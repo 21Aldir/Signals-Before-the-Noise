@@ -1,5 +1,6 @@
 # Threat Hunt Report: External RDP Compromise — Signals Before the Noise
-<img width="709" height="418" alt="image" src="https://github.com/user-attachments/assets/ed93ddd9-a7e3-44ba-b850-7974f13d91a4" />
+<img width="1187" height="717" alt="image" src="https://github.com/user-attachments/assets/997df2fb-5c32-4e7c-8e43-86e1848dd8ff" />
+
 
 - [Proactive Hunt Brief](./hunt-03-brief.md)
 
