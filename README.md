@@ -1,5 +1,4 @@
-# Threat Hunt Report
-<img width="1187" height="717" alt="image" src="https://github.com/user-attachments/assets/997df2fb-5c32-4e7c-8e43-86e1848dd8ff" />
+# Official [Cyber Range](http://joshmadakor.tech/cyber-range) Project
 
 # Threat Hunt Report: External RDP Compromise — Signals Before the Noise
 
@@ -66,9 +65,21 @@ DeviceNetworkEvents
 | count
 ```
 
-![RDP Event Count - 197 results](images/01-rdp-event-count.png)
+![RDP Event Count - 194 results](images/01-rdp-event-count.png)
 
-- **197** total network events on port 3389 from public IPs.
+- **194** total network events on port 3389 from public IPs.
+
+**Query used:**
+
+```kql
+DeviceNetworkEvents
+| where TimeGenerated between (datetime(2025-12-09) .. datetime(2025-12-23))
+| where DeviceName contains "azwks-phtg-02"
+| where LocalPort == 3389
+| where RemoteIPType == "Public"
+| summarize dcount(RemoteIP)
+```
+
 - **173** unique source IPs targeted the exposed service.
 
 ![Unique Source IPs - 173](images/02-unique-source-ips.png)
@@ -99,12 +110,42 @@ DeviceLogonEvents
 - **675** total RDP-related authentication events from public IPs.
 - Dominant outcome: **`LogonFailed`** (646 events).
 
+**Query used:**
+
+```kql
+DeviceLogonEvents
+| where TimeGenerated between (datetime(2025-12-09) .. datetime(2025-12-23))
+| where DeviceName contains "azwks-phtg-02"
+| where RemoteIPType == "Public"
+| where LogonType in ("Network", "RemoteInteractive")
+| where ActionType == "LogonFailed"
+| summarize count() by FailureReason
+| order by count_ desc
+```
+
 ![Failure Reason - InvalidUserNameOrPassword](images/04-failure-reason.png)
 
 - Most common failure reason: **`InvalidUserNameOrPassword`** — classic credential brute force.
 - **29 successful** logon events recorded.
 - GeoIP enrichment: **17 countries** associated with authentication attempts.
 - **2 countries** had at least one successful authentication: **United States** and **Uruguay**.
+
+**Query used:**
+
+```kql
+let GeoTable = externaldata(network:string, geoname_id:long, continent_code:string, continent_name:string, country_iso_code:string, country_name:string)
+    [@"https://raw.githubusercontent.com/datasets/geoip2-ipv4/main/data/geoip2-ipv4.csv"]
+    with (format="csv");
+DeviceLogonEvents
+| where TimeGenerated between (datetime(2025-12-09) .. datetime(2025-12-23))
+| where DeviceName contains "azwks-phtg-02"
+| where RemoteIPType == "Public"
+| where LogonType in ("Network", "RemoteInteractive")
+| where ActionType == "LogonSuccess"
+| distinct RemoteIP
+| evaluate ipv4_lookup(GeoTable, RemoteIP, network)
+| distinct country_name
+```
 
 ![Successful Auth Countries](images/05-successful-countries.png)
 
@@ -153,6 +194,18 @@ Both IPs fall within the same `/24` subnet — consolidated attacker infrastruct
 
 Scoped process events to after the first Uruguay logon and filtered by the compromised account.
 
+**Query used:**
+
+```kql
+DeviceProcessEvents
+| where TimeGenerated between (datetime(2025-12-12T05:47:45Z) .. datetime(2025-12-23))
+| where DeviceName contains "azwks-phtg-02"
+| where InitiatingProcessAccountName == "vmadminusername"
+| where FileName == "notepad.exe"
+| project TimeGenerated, FileName, ProcessCommandLine, InitiatingProcessFileName
+| order by TimeGenerated asc
+```
+
 **First notable process:**
 
 ```
@@ -169,6 +222,17 @@ The attacker opened **`notes_sarah.txt`** — internal documentation belonging t
 ### 6. Payload Delivery — `DeviceFileEvents`
 
 Tracked the payload through its full rename chain using the file hash.
+
+**Query used:**
+
+```kql
+DeviceFileEvents
+| where TimeGenerated between (datetime(2025-12-09) .. datetime(2025-12-23))
+| where DeviceName contains "azwks-phtg-02"
+| where SHA256 == "224462ce5e3304e3fd0875eeabc829810a894911e3d4091d4e60e67a2687e695"
+| order by TimeGenerated asc
+| project TimeGenerated, ActionType, FileName, PreviousFileName, FolderPath
+```
 
 **SHA256:** `224462ce5e3304e3fd0875eeabc829810a894911e3d4091d4e60e67a2687e695`
 
@@ -191,6 +255,17 @@ Tracked the payload through its full rename chain using the file hash.
 ### 7. Payload Execution & Defense Evasion — `DeviceEvents` + `DeviceProcessEvents`
 
 Windows Defender detected and quarantined the payload three times between 14:11 and 14:17 on 12 December. Shortly after, Defender was switched to **Passive Mode** — allowing detections to be logged but removing the ability to block or quarantine. The payload then executed successfully.
+
+**Query used:**
+
+```kql
+DeviceEvents
+| where TimeGenerated between (datetime(2025-12-09) .. datetime(2025-12-23))
+| where DeviceName contains "azwks-phtg-02"
+| where SHA256 == "224462ce5e3304e3fd0875eeabc829810a894911e3d4091d4e60e67a2687e695"
+| project TimeGenerated, ActionType, AdditionalFields
+| order by TimeGenerated asc
+```
 
 **Defender Classification:** `Trojan:Win32/Meterpreter.RPZ!MTB`  
 **Malware Family:** **Meterpreter** (Metasploit post-exploitation framework)
