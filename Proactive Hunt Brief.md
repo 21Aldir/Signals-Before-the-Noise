@@ -1,4 +1,4 @@
-# Proactive Hunt Brief — Hunt 03: Signals Before the Noise
+# Proactive Hunt Brief — Signals Before the Noise
 
 > **Classification:** External RDP Compromise  
 > **Phases:** 7 (ATT&CK Kill Chain)
