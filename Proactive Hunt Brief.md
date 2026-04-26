@@ -5,6 +5,14 @@
 > **Classification:** External RDP Compromise  
 > **Phases:** 7 (ATT&CK Kill Chain)
 
+## Evidence
+<img width="440" height="844" alt="image" src="https://github.com/user-attachments/assets/fec6e90e-00c6-42af-a9d8-2b991917bad7" />
+
+<img width="1363" height="996" alt="image" src="https://github.com/user-attachments/assets/ccfbdf64-29a9-44da-96bd-82f8a343c061" />
+
+
+
+
 ---
 
 ## Background
