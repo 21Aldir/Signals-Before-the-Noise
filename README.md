@@ -1,13 +1,14 @@
-# Official [Cyber Range](http://joshmadakor.tech/cyber-range) Project
-
 # Threat Hunt Report: External RDP Compromise — Signals Before the Noise
 
-- [Proactive Hunt Brief](./hunt-03-brief.md)
+<img width="947" height="585" alt="image" src="https://github.com/user-attachments/assets/df30179c-600e-4a8e-a0dc-ee943e33944f" />
+
+
+- [Proactive Hunt Brief](https://github.com/21Aldir/Signals-Before-the-Noise/blob/main/Hunt%20Brief.md)
 
 ## Platforms and Languages Leveraged
 
 - Windows 10 Virtual Machines (Microsoft Azure)
-- SIEM Platform: Microsoft Sentinel (`law-cyber-range`)
+- SIEM Platform: Microsoft Sentinel 
 - EDR Telemetry: Microsoft Defender for Endpoint (MDE)
 - Kusto Query Language (KQL)
 - GeoIP Enrichment via external CSV dataset
@@ -65,7 +66,7 @@ DeviceNetworkEvents
 | count
 ```
 
-![RDP Event Count - 194 results](images/01-rdp-event-count.png)
+<img width="79" height="65" alt="image" src="https://github.com/user-attachments/assets/d234a1f7-ba55-4531-b4d9-a661ecb3140f" />
 
 - **194** total network events on port 3389 from public IPs.
 
@@ -82,7 +83,8 @@ DeviceNetworkEvents
 
 - **173** unique source IPs targeted the exposed service.
 
-![Unique Source IPs - 173](images/02-unique-source-ips.png)
+<img width="130" height="58" alt="image" src="https://github.com/user-attachments/assets/328d6b30-18fd-4dfe-a63a-ba0354637d61" />
+
 
 - **57** source IPs showed more than one ActionType — both attempted and accepted connections, indicating a higher-confidence scanning class.
 - GeoIP enrichment revealed **11 distinct countries** associated with this RDP scanning activity.
@@ -105,7 +107,8 @@ DeviceLogonEvents
 | order by count_ desc
 ```
 
-![Auth Outcomes by ActionType](images/03-auth-outcomes.png)
+<img width="245" height="93" alt="image" src="https://github.com/user-attachments/assets/68891ea3-6110-4969-a4c0-a75d0e332de9" />
+
 
 - **675** total RDP-related authentication events from public IPs.
 - Dominant outcome: **`LogonFailed`** (646 events).
@@ -118,12 +121,12 @@ DeviceLogonEvents
 | where DeviceName contains "azwks-phtg-02"
 | where RemoteIPType == "Public"
 | where LogonType in ("Network", "RemoteInteractive")
-| where ActionType == "LogonFailed"
 | summarize count() by FailureReason
 | order by count_ desc
 ```
 
-![Failure Reason - InvalidUserNameOrPassword](images/04-failure-reason.png)
+<img width="344" height="210" alt="image" src="https://github.com/user-attachments/assets/ce295ff8-6ec4-42e2-95bf-1cb0f2c8c18a" />
+
 
 - Most common failure reason: **`InvalidUserNameOrPassword`** — classic credential brute force.
 - **29 successful** logon events recorded.
@@ -147,7 +150,8 @@ DeviceLogonEvents
 | distinct country_name
 ```
 
-![Successful Auth Countries](images/05-successful-countries.png)
+<img width="153" height="90" alt="image" src="https://github.com/user-attachments/assets/a7eec609-500e-45f8-aca0-59a1d658d284" />
+
 
 PHTG operates exclusively in the United States. **Uruguay** was immediately flagged as anomalous.
 
@@ -184,7 +188,9 @@ DeviceLogonEvents
 | First Logon | 12/12/2025, 5:47:45 AM UTC |
 | First Interactive Session | 12/13/2025, 9:31:20 AM UTC |
 
-![Uruguay Successful Logons](images/06-uruguay-logons.png)
+![Uruguay Successful Logons]
+<img width="730" height="392" alt="image" src="https://github.com/user-attachments/assets/033448e4-4ee5-4e33-9b71-848d3623bf72" />
+
 
 Both IPs fall within the same `/24` subnet — consolidated attacker infrastructure.
 
@@ -215,7 +221,8 @@ Command: "NOTEPAD.EXE" C:\Users\vmAdminUsername\Documents\PHTG\notes_sarah.txt
 
 The attacker opened **`notes_sarah.txt`** — internal documentation belonging to the engineer who made the LinkedIn post. This file likely contained internal service details that reduced the attacker's effort.
 
-![notepad.exe opening notes_sarah.txt](images/07-notepad-notes-sarah.png)
+<img width="814" height="395" alt="image" src="https://github.com/user-attachments/assets/a9e67806-6e1d-4a1e-b49f-0d5ce2145f34" />
+
 
 ---
 
@@ -248,7 +255,10 @@ DeviceFileEvents
 
 **Double-extension evasion:** The file was briefly named `Sarah_Chen_Notes.exe.Txt` — appearing as a text file while containing an executable. The final name `PHTG.exe` placed inside the legitimate HealthCloud directory was designed to blend with expected service infrastructure.
 
-![Full Payload Rename Chain](images/08-rename-chain.png)
+![Full Payload Rename Chain]
+
+<img width="1217" height="402" alt="image" src="https://github.com/user-attachments/assets/c43c94e1-ffdd-4f9b-806b-a99cf1f50404" />
+
 
 ---
 
@@ -270,7 +280,8 @@ DeviceEvents
 **Defender Classification:** `Trojan:Win32/Meterpreter.RPZ!MTB`  
 **Malware Family:** **Meterpreter** (Metasploit post-exploitation framework)
 
-![Defender Detection - Meterpreter](images/09-defender-meterpreter.png)
+<img width="1212" height="386" alt="image" src="https://github.com/user-attachments/assets/86c55658-111c-466e-81d0-165580998659" />
+
 
 **Execution phases:**
 
@@ -303,7 +314,10 @@ DeviceNetworkEvents
 
 The C2 IP falls in the same `/24` as the attacker's RDP IPs (`173.244.55.128`, `.130`, `.131`) — all infrastructure consolidated in Uruguay.
 
-![C2 Callback to Uruguay - Port 4444](images/10-c2-callback.png)
+![C2 Callback to Uruguay - Port 4444]
+
+<img width="744" height="231" alt="image" src="https://github.com/user-attachments/assets/a8e63dda-2ac7-44a8-ac87-28785b23c8ef" />
+
 
 ---
 
